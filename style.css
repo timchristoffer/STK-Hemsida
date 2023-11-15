@@ -137,6 +137,13 @@ button:hover{
     font-size: 15px;
 }
 
+#programList li img {
+    max-width: 300px;
+    height: auto;    
+    border: 1px solid #ddd; 
+    border-radius: 8px;    
+}
+
 .program-age-label {
     font-weight: bold;
     font-size: 15px;

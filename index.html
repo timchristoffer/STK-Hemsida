@@ -16,7 +16,7 @@
         </div>
 
         <!-- Glöm inte ta bort denna knapp -->
-        <button onclick="clearLocalStorage()">Rensa Local Storage</button>
+        <button onclick="clearLocalstorage()">Rensa Local Storage</button>
         <!-- Glöm inte ta bort denna knapp-->
 
         <div class="search-container">
@@ -38,6 +38,9 @@
             <label for="ageLimit">Åldersgräns:</label>
             <input type="number" id="ageLimit" class="program-age" min="0" max="18" required oninput="validateAgeLimit(this)">
 
+            <!-- Replace the input for the program image URL with a file input -->
+            <label for="programImage">Bild (Ladda upp):</label>
+            <input type="file" id="programImage" accept="image/*">
 
             <button type="button" onclick="submitProgram()">Lägg till program</button>
         </form>
@@ -47,7 +50,6 @@
         <p id="lastUpdated">Senast uppdaterad: <span id="updateTimestamp">loading...</span></p>
     </div>
 
-    
     <script src="script.js"></script>
 </body>
 </html>

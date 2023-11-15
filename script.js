@@ -18,11 +18,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         ageLimit = Math.min(ageLimit, 18);
 
-        if (title && description && ageLimit) {
+        const programImageInput = document.getElementById("programImage");
+        const imageFile = programImageInput.files[0]; // Get the image file
+
+        if (title && description && ageLimit && imageFile) {
+            // You can handle the image file as needed
+            console.log("Uploaded image file:", imageFile);
+
             const program = {
                 title: title,
                 description: description,
                 ageLimit: ageLimit,
+                image: URL.createObjectURL(imageFile), // Create a URL for the uploaded image
             };
 
             addProgramToLocalStorage(program);
@@ -81,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const li = document.createElement("li");
                 li.id = `program-${index}`;
                 li.innerHTML = `
+                    <img src="${program.image}" alt="${program.title} image">
                     <strong>${program.title}</strong>
                     <span class="program-description">${program.description}</span>
                     <span class="program-age-label">Åldersgräns: </span>
@@ -106,9 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     searchInput.addEventListener("input", displayPrograms);
-});
-
-document.addEventListener("DOMContentLoaded", function () {
 
     const repoOwner = 'timchristoffer';
     const repoName = 'STK-Hemsida';
@@ -127,3 +132,8 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error('Error fetching GitHub data:', error);
         });
 });
+
+function clearLocalstorage() {
+    localStorage.clear();
+    location.reload();
+}
