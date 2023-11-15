@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <title>Statliga Televisionskanalen</title>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="Images/8654391.png">
+            <h1>Statliga Televisionskanalen</h1>
+        </div>
+
+        <!-- Glöm inte ta bort denna knapp -->
+        <button onclick="clearLocalStorage()">Rensa Local Storage</button>
+        <!-- Glöm inte ta bort denna knapp-->
+
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Sök efter TV-program...">
+            <button type="button" onclick="searchPrograms()">Sök</button>
+        </div>
+
+        <button type="button" onclick="toggleProgramForm()">Lägg till nytt program</button>
+
+        <ul id="programList"></ul>
+
+        <form id="programForm" class="hidden">
+            <label for="programTitle">Titel:</label>
+            <input type="text" id="programTitle" class="program-title" required>
+
+            <label for="programDescription">Beskrivning:</label>
+            <textarea id="programDescription" class="program-description" rows="4" required></textarea>
+
+            <label for="ageLimit">Åldersgräns:</label>
+            <input type="number" id="ageLimit" class="program-age" min="0" max="18" required oninput="validateAgeLimit(this)">
+
+
+            <button type="button" onclick="submitProgram()">Lägg till program</button>
+        </form>
+
+        <div id="successMessage" class="hidden">Programmet har lagts till!</div>
+    </div>
+
+    <p id="lastUpdated">Senast uppdaterad: <span id="updateTimestamp">loading...</span></p>
+
+    
+    <script src="script.js"></script>
+</body>
+</html>
