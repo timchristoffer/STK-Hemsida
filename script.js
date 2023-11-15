@@ -1,116 +1,129 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const programForm = document.getElementById("programForm");
-  const programList = document.getElementById("programList");
-  const successMessage = document.getElementById("successMessage");
-  const searchInput = document.getElementById("search-bar");
+    const programForm = document.getElementById("programForm");
+    const programList = document.getElementById("programList");
+    const successMessage = document.getElementById("successMessage");
+    const searchInput = document.getElementById("search-bar");
+    let speaking = false;
 
-  displayPrograms();
+    displayPrograms();
 
-  window.toggleProgramForm = function () {
-      programForm.classList.toggle("hidden");
-  };
+    window.toggleProgramForm = function () {
+        programForm.classList.toggle("hidden");
+    };
 
-  window.submitProgram = function () {
-      const title = document.getElementById("programTitle").value;
-      const description = document.getElementById("programDescription").value;
-      let ageLimit = document.getElementById("ageLimit").value;
+    window.submitProgram = function () {
+        const title = document.getElementById("programTitle").value;
+        const description = document.getElementById("programDescription").value;
+        let ageLimit = document.getElementById("ageLimit").value;
 
-      // Begränsa åldersgränsen till högst 18
-      ageLimit = Math.min(ageLimit, 18);
+        ageLimit = Math.min(ageLimit, 18);
 
-      if (title && description && ageLimit) {
-          const program = {
-              title: title,
-              description: description,
-              ageLimit: ageLimit,
-          };
+        if (title && description && ageLimit) {
+            const program = {
+                title: title,
+                description: description,
+                ageLimit: ageLimit,
+            };
 
-          addProgramToLocalStorage(program);
+            addProgramToLocalStorage(program);
 
-          successMessage.classList.remove("hidden");
+            successMessage.classList.remove("hidden");
 
-          programForm.reset();
+            programForm.reset();
 
-          displayPrograms();
-      }
-  };
+            displayPrograms();
 
-  function addProgramToLocalStorage(program) {
-      const programs = JSON.parse(localStorage.getItem("programs")) || [];
+            setTimeout(function () {
+                successMessage.classList.add("hidden");
+            }, 3000);
 
-      programs.push(program);
+            successMessage.classList.remove("fade-out");
+            void successMessage.offsetWidth;
+            successMessage.classList.add("fade-out");
+        }
+    };
 
-      localStorage.setItem("programs", JSON.stringify(programs));
-  }
+    function addProgramToLocalStorage(program) {
+        const programs = JSON.parse(localStorage.getItem("programs")) || [];
 
-  function createSpeakButton(index, title, description, ageLimit) {
-      const button = document.createElement("button");
-      button.classList.add("speakButton");
-      button.innerHTML = `<i class='bx bx-volume' id='icon-${index}'></i>`;
-      button.onclick = function () {
-          speakProgram(title, description, ageLimit);
-      };
-      return button;
-  }
+        programs.push(program);
 
-  function displayPrograms() {
-      const programs = JSON.parse(localStorage.getItem("programs")) || [];
-      const searchTerm = searchInput.value.toLowerCase();
+        localStorage.setItem("programs", JSON.stringify(programs));
+    }
 
-      programList.innerHTML = "";
+    function createSpeakButton(index, title, description, ageLimit) {
+        const button = document.createElement("button");
+        button.classList.add("speakButton");
+        button.innerHTML = `<i class='bx bx-volume' id='icon-${index}'></i>`;
+        button.onclick = function () {
+            if (!speaking) {
+                speakProgram(title, description, ageLimit);
+                speaking = true;
+            } else {
+                window.speechSynthesis.cancel();
+                speaking = false;
+            }
+        };
+        return button;
+    }
 
-      programs.forEach(function (program, index) {
-          const programInfo = `${program.title} ${program.description} ${program.ageLimit}`;
-          const lowerCaseProgramInfo = programInfo.toLowerCase();
+    function displayPrograms() {
+        const programs = JSON.parse(localStorage.getItem("programs")) || [];
+        const searchTerm = searchInput.value.toLowerCase();
 
-          if (!searchTerm || lowerCaseProgramInfo.includes(searchTerm)) {
-              const li = document.createElement("li");
-              li.id = `program-${index}`;
-              li.innerHTML = `
-                  <strong>${program.title}</strong>
-                  <span class="program-description">${program.description}</span>
-                  <span class="program-age-label">Åldersgräns: </span>
-                  <span class="program-age">${program.ageLimit}</span>
-              `;
-              li.appendChild(createSpeakButton(index, program.title, program.description, program.ageLimit));
-              programList.appendChild(li);
-          }
-      });
+        programList.innerHTML = "";
 
-      programList.style.display = searchTerm ? "block" : "none";
-  }
+        programs.forEach(function (program, index) {
+            const programInfo = `${program.title} ${program.description} ${program.ageLimit}`;
+            const lowerCaseProgramInfo = programInfo.toLowerCase();
 
-  window.speakProgram = function (title, description, ageLimit) {
-      const speechText = `Programtitel: ${title}. Beskrivning: ${description}. Åldersgräns: ${ageLimit} år.`;
+            if (!searchTerm || lowerCaseProgramInfo.includes(searchTerm)) {
+                const li = document.createElement("li");
+                li.id = `program-${index}`;
+                li.innerHTML = `
+                    <strong>${program.title}</strong>
+                    <span class="program-description">${program.description}</span>
+                    <span class="program-age-label">Åldersgräns: </span>
+                    <span class="program-age">${program.ageLimit}</span>
+                `;
+                li.appendChild(createSpeakButton(index, program.title, program.description, program.ageLimit));
+                programList.appendChild(li);
+            }
+        });
 
-      const utterance = new SpeechSynthesisUtterance(speechText);
-      window.speechSynthesis.speak(utterance);
-  };
+        programList.style.display = searchTerm ? "block" : "none";
+    }
 
-  searchInput.addEventListener("input", displayPrograms);
+    window.speakProgram = function (title, description, ageLimit) {
+        const speechText = `Programtitel: ${title}. Beskrivning: ${description}. Åldersgräns: ${ageLimit} år.`;
+
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        window.speechSynthesis.speak(utterance);
+
+        utterance.onend = function () {
+            speaking = false;
+        };
+    };
+
+    searchInput.addEventListener("input", displayPrograms);
 });
-
-function clearLocalStorage() {
-  localStorage.clear();
-  console.log("Local Storage rensad.");
-}
 
 document.addEventListener("DOMContentLoaded", function () {
-  const repoOwner = 'timchristoffer';
-  const repoName = 'STK-Hemsida';
-  const branch = 'main';
 
-  const apiUrl = `https://api.github.com/repos/${timchristoffer}/${STK-Hemsida}/branches/${main}`;
+    const repoOwner = 'timchristoffer';
+    const repoName = 'STK-Hemsida';
+    const branch = 'main';
 
-  fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-          const lastUpdatedElement = document.getElementById('updateTimestamp');
-          const lastUpdatedDate = new Date(data.commit.commit.author.date);
-          lastUpdatedElement.textContent = lastUpdatedDate.toLocaleString();
-      })
-      .catch(error => {
-          console.error('Error fetching GitHub data:', error);
-      });
+    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/branches/${branch}`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const lastUpdatedElement = document.getElementById('updateTimestamp');
+            const lastUpdatedDate = new Date(data.commit.commit.author.date);
+            lastUpdatedElement.textContent = lastUpdatedDate.toLocaleString();
+        })
+        .catch(error => {
+            console.error('Error fetching GitHub data:', error);
+        });
 });
-  
